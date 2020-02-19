@@ -2,39 +2,68 @@ import tkinter as tk
 from tkinter import filedialog
 import re
 import sys
+from sm import SM
 
 root = tk.Tk()
 root.withdraw()
 
 # file_path = filedialog.askopenfilename()
 # print(file_path)
+
 file_path = "evacSm.cpp"
-print(file_path)
+# print(file_path)
 
-input = open('dcosm.dat', 'r')
+# input = open('dcosm.dat', 'r')
 
-with open("EvacSM.cpp", "r") as f:
-    # Define regex searches
-    for line in f:
-        regexAddTransistions = re.compile("void.*addTransitions", re.DOTALL)
-        result = regexAddTransistions.search(line)
-        if not result:
-            continue
-        else:
-            print('result2=', result)
-            all_lines = "".join(f.readlines())
+with open('EvacSM.cpp', 'r') as f:
+    all_lines = f.readlines()
 
-            regexStartOfStart = re.compile("^{", re.MULTILINE);
-            result = regexStartOfStart.search(all_lines)
-            if result:
-                print ('result3=', result)
+all_lines = [x.strip() for x in all_lines]
 
-            # Find the {...} text
-            regex = r"\{(.*^[\s]*)\},$"
-            matches = re.finditer(regex, all_lines, re.MULTILINE | re.DOTALL)
+state_machines = []
 
-            for match_num, match in enumerate(matches):
-                print('match={}'.format(match))
-                it = re.finditer(r".*?,", match.group(1), re.MULTILINE)
-                for i in it:
-                    print(i)
+it = iter(all_lines)
+
+
+def newStateTransition():
+    global regex, line, sm
+    regex = re.compile('},?')
+    while regex.match(line) is None:
+        if not line.startswith('/'):
+            # print(line)
+            state_machine.append(line.rstrip(','))
+        line = next(it)
+
+    # print('sm', state_machine)
+    if len(state_machine) < 5:
+        return
+    sm = SM()
+    sm.init_sm(state_machine[1:])
+    state_machines.append(sm)
+    sm.print()
+
+
+for line in it:
+    regex = re.compile('fsm.addTransitions')
+    result = regex.search(line)
+    if not result:
+        continue
+    # print (line)
+
+    line = next(it)
+    while line is not None:
+        regex = re.compile('}\);')
+        while line != '{':
+            if regex.match(line):
+                break
+            line = next(it)
+
+        state_machine = []
+        # print('line=', line)
+
+        newStateTransition()
+
+print ('state_machines=', state_machines)
+
+print('DONE')
+
