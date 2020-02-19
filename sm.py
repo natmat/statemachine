@@ -1,4 +1,12 @@
 import re
+import random
+import numpy
+
+def pick_color():
+    colors = ["blue","black","brown","red","yellow","green","orange","turquoise","pink"]
+    random.shuffle(colors)
+    # color = list(numpy.random.choice(range(256), size=3))
+    return colors[0]
 
 class SM:
 
@@ -11,8 +19,9 @@ class SM:
         self.ternal = ''
 
     def init_sm(self, transitions):
-        self.this_state = transitions[0]
-        self.next_state = transitions[1]
+        s = 'State::'
+        self.this_state = re.sub(s, '', transitions[0])
+        self.next_state = re.sub(s, '', transitions[1])
         self.event = transitions[2]
 
         regex = re.compile('.*return\s*(.*);')
@@ -26,4 +35,5 @@ class SM:
         self.ternal = transitions[5]
 
     def print(self):
-        print("{} -> {} [label=\"{}\"];".format(self.this_state, self.next_state, self.guard))
+        colour = pick_color()
+        print("\t{} -> {} [color={}, fontcolor={}, label=\"{}\"];".format(self.this_state, self.next_state, colour, colour, self.event))

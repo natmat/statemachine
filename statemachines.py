@@ -7,15 +7,12 @@ from sm import SM
 root = tk.Tk()
 root.withdraw()
 
-# file_path = filedialog.askopenfilename()
+file_path = filedialog.askopenfilename()
+# file_path = "evacSm.cpp"
+# file_path = "dcosm.dat"
 # print(file_path)
 
-file_path = "evacSm.cpp"
-# print(file_path)
-
-# input = open('dcosm.dat', 'r')
-
-with open('EvacSM.cpp', 'r') as f:
+with open(file_path, 'r') as f:
     all_lines = f.readlines()
 
 all_lines = [x.strip() for x in all_lines]
@@ -61,8 +58,16 @@ for line in it:
         state_machine = []
         newStateTransition()
 
+print("""
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+""")
+
 for s in state_machines:
     s.print()
 
-print('DONE')
+print('}\n')
 
