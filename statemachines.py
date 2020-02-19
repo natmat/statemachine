@@ -40,30 +40,29 @@ def newStateTransition():
     sm = SM()
     sm.init_sm(state_machine[1:])
     state_machines.append(sm)
-    sm.print()
 
 
+done = False
 for line in it:
     regex = re.compile('fsm.addTransitions')
     result = regex.search(line)
     if not result:
         continue
-    # print (line)
 
     line = next(it)
-    while line is not None:
+    while not done and line is not None:
         regex = re.compile('}\);')
         while line != '{':
             if regex.match(line):
+                done = True
                 break
             line = next(it)
 
         state_machine = []
-        # print('line=', line)
-
         newStateTransition()
 
-print ('state_machines=', state_machines)
+for s in state_machines:
+    s.print()
 
 print('DONE')
 
