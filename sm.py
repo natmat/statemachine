@@ -31,8 +31,11 @@ class SM:
         else:
             self.guard = ''
 
-        self.trigger = transitions[4]
-        self.ternal = transitions[5]
+        try:
+            self.trigger = transitions[4]
+            self.ternal = transitions[5]
+        except:
+            print("Too few transitions")
 
     def print(self):
         colour = pick_color()

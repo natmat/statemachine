@@ -10,22 +10,18 @@ root.withdraw()
 file_path = filedialog.askopenfilename()
 # file_path = "evacSm.cpp"
 # file_path = "dcosm.dat"
+# file_path = "EvacSM.cpp"
 # print(file_path)
 
 with open(file_path, 'r') as f:
     all_lines = f.readlines()
 
+# Remove spaces from line
 all_lines = [x.strip() for x in all_lines]
 
-state_machines = []
-
-it = iter(all_lines)
-
-
 def newStateTransition():
-    global end_of_fsm_regex, line, sm
-    regex = re.compile('},?')
-    while regex.match(line) is None:
+    global end_of_fsm, line, sm
+    while end_of_state.match(line) is None:
         if not line.startswith('/'):
             # print(line)
             state_machine.append(line.rstrip(','))
@@ -39,18 +35,27 @@ def newStateTransition():
     state_machines.append(sm)
 
 
+start_of_fsm = re.compile('fsm.addTransitions')
+end_of_fsm = re.compile('}\);')
+start_of_state = re.compile('{')
+end_of_state = re.compile('^}[,]?.*$')
+
+state_machines = []
+it = iter(all_lines)
 done = False
 for line in it:
-    end_of_fsm_regex = re.compile('fsm.addTransitions')
-    result = end_of_fsm_regex.search(line)
+    # Search for the FSM start
+    result = start_of_fsm.search(line)
     if not result:
         continue
 
+    # Skip current, read the next line
     line = next(it)
     while not done and line is not None:
-        end_of_fsm_regex = re.compile('}\);')
-        while line != '{':
-            if end_of_fsm_regex.match(line):
+        while not start_of_state.match(line):
+            # print("# ", line)
+            if end_of_fsm.match(line):
+                # print("end of FSM")
                 done = True
                 break
             line = next(it)
