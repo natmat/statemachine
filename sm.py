@@ -3,10 +3,8 @@ import random
 import numpy
 
 def pick_color():
-    colors = ["blue","black","brown","red","yellow","green","orange","turquoise","pink"]
-    random.shuffle(colors)
-    # color = list(numpy.random.choice(range(256), size=3))
-    return colors[0]
+    colors = ["blue","black","brown","red","darkorchid1","green","orange","turquoise","pink"]
+    return random.choice(colors)
 
 class SM:
 
@@ -15,8 +13,8 @@ class SM:
         self.next_state = ''
         self.event = ''
         self.guard = ''
-        self.trigger = ''
-        self.ternal = ''
+        self.action = ''
+        self.xternal = ''
 
     def init_sm(self, transitions):
         s = 'State::'
@@ -31,12 +29,18 @@ class SM:
         else:
             self.guard = ''
 
-        try:
-            self.trigger = transitions[4]
-            self.ternal = transitions[5]
-        except:
-            print("Too few transitions")
+        regex = re.compile('.*\{(.*)\}')
+        result = regex.search(transitions[4], re.DOTALL)
+        if result:
+            self.action = result.group(1)
+        else:
+            self.action = ''
+
+        self.xternal = transitions[5]
 
     def print(self):
         colour = pick_color()
-        print("\t{} -> {} [color={}, fontcolor={}, label=\"{}\"];".format(self.this_state, self.next_state, colour, colour, self.event))
+        # print("\t{} -> {} [color={}, fontcolor={}, label=\"{}\n[{}]\"];".
+        #       format(self.this_state, self.next_state, colour, colour, self.event, self.guard))
+        print("\t{} -> {} [color={}, fontcolor={}, label=\"{} \[{}\]\n<{}>\"];".
+              format(self.this_state, self.next_state, colour, colour, self.event, self.guard, self.action))

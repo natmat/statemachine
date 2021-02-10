@@ -11,7 +11,7 @@ file_path = filedialog.askopenfilename()
 # file_path = "evacSm.cpp"
 # file_path = "dcosm.dat"
 # print(file_path)
-
+# file_path = "D:\svn\Gen6\QA\Libraries\TmcStadler\DcoSm.cpp"
 with open(file_path, 'r') as f:
     all_lines = f.readlines()
 
@@ -58,6 +58,7 @@ for line in it:
         state_machine = []
         newStateTransition()
 
+print('# {}'.format(file_path))
 print("""
 digraph G {
 	rankdir=LR;
