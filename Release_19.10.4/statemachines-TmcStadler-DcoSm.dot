@@ -1,0 +1,55 @@
+# /Users/Nathan/work/petards/git/asdo/Libraries/TmcStadler/DcoSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	Initial -> DualScreenCctv [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[_state.icmType() == IcmType::Asdo && _state.dualScreenEnableCctvAlarmMessage() != nullptr\]/\nhandleDualScreenCctvEnableAlarm()"];
+	Initial -> Asdo [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[_state.icmType() == IcmType::Asdo && _state.dualScreenEnableCctvAlarmMessage() == nullptr\]/\nhandleShowAsdo(_state.hsm().currentEventType())"];
+	Initial -> TcmsAlarm [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[_state.icmType() == IcmType::Otcm && _state.tcmsAlarm()\]/\nenableTcmsAlarmView()"];
+	Initial -> Otcm [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[_state.icmType() == IcmType::Otcm && !_state.tcmsAlarm()\]/\nhandleShowOtcm(false)"];
+	Initial -> Otcm [color=green, fontcolor=green, label="DcoEvent::GuiButtonOtcmClicked \[_state.dualScreenShowOtcmMessage() == nullptr\]/\nsetDistanceAlarm(true); _state.wantToShowOtcm(true); handleShowOtcm(true)"];
+	Initial -> DualScreenOtcm [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonOtcmClicked \[_state.icmType() == IcmType::Asdo && _state.dualScreenShowOtcmMessage() != nullptr\]/\nsetDistanceAlarm(true); _state.wantToShowOtcm(true); handleShowOtcm(true); handleDualScreenOtcmShowCameras()"];
+	Initial -> Asdo [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonAsdoClicked \[\]/\nhandleShowAsdo(_state.hsm().currentEventType()); startTimeoutToOtcmGuiButtonOtcmClickedThread(); checkForEvacForInactiveCab()"];
+	Initial -> Otcm [color=pink, fontcolor=pink, label="DcoEvent::GuiButtonOtcmClicked \[_state.icmType() == IcmType::Otcm\]/\nsetDistanceAlarm(true); startTimeoutToOtcmGuiButtonOtcmClickedThread()"];
+	Initial -> Cctv [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonCctvClicked \[\]/\nhandleShowCctv()"];
+	Initial -> Otcm [color=black, fontcolor=black, label="DcoEvent::ShowOtcmOnDoorClosed \[\]/\nhandleShowOtcm(false)"];
+	Initial -> Otcm [color=brown, fontcolor=brown, label="DcoEvent::ShowOtcmOnDoorReleased \[\]/\nhandleShowOtcm(false)"];
+	Initial -> DualScreenOtcm [color=blue, fontcolor=blue, label="DcoEvent::DualScreenOtcmEnable \[\]/\nhandleShowOtcm(false); handleDualScreenOtcmShowCameras()"];
+	Initial -> DualScreenCctv [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::DualScreenCctvEnableAlarm \[\]/\nhandleDualScreenCctvEnableAlarm()"];
+	Initial -> Pis [color=green, fontcolor=green, label="DcoEvent::GuiButtonPisClicked \[\]/\nhandleShowPis()"];
+	Cctv -> Pis [color=pink, fontcolor=pink, label="DcoEvent::OnPisActivationRequestMessage \[\]/\nhandleShowPis()"];
+	Settings -> Pis [color=black, fontcolor=black, label="DcoEvent::OnPisActivationRequestMessage \[\]/\nhandleShowPis()"];
+	Initial -> Settings [color=blue, fontcolor=blue, label="DcoEvent::GuiButtonSettingsClicked \[\]/\nhandleShowSettings()"];
+	Asdo -> Asdo [color=green, fontcolor=green, label="DcoEvent::ExitEvacuationMode \[\]/\n"];
+	Otcm -> Otcm [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnDoorReleaseMessage \[\]/\nupdateGuiWithDoorRelease(); handleShowOtcm(false)"];
+	Otcm -> Otcm [color=pink, fontcolor=pink, label="DcoEvent::OnCameraMapMessage \[\]/\nhandleShowOtcm(false)"];
+	Otcm -> Otcm [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnCameraSectionMapMessage \[\]/\nupdateGuiWithSectionsMap(); handleShowOtcm(false)"];
+	Otcm -> Otcm [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnLowSpeedMessage \[_state.icmType() == IcmType::Otcm\]/\n_state.markEventOnHighSpeedCamerasNotViewed(false)"];
+	Otcm -> Otcm [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonOtcmClicked \[_state.icmType() == IcmType::Otcm && !_state.monitorFailureMode()\]/\nsetDistanceAlarm(true); _state.wantToShowOtcm( true ); handleShowOtcm(true)"];
+	Otcm -> Otcm [color=blue, fontcolor=blue, label="DcoEvent::OnDistanceAlarmMessage \[\]/\nhandleDistanceAlarmMessage()"];
+	Otcm -> Otcm [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonOtcmClicked \[\]/\nsetDistanceAlarm(true); _state.wantToShowOtcm( false )"];
+	Cctv -> Cctv [color=black, fontcolor=black, label="DcoEvent::GuiButtonSaloonClicked \[(amIActiveCab() && _state.lowSpeed()) || (!_state.lowSpeed() && _state.tcmsAlarm()) || !amIActiveCab()\]/\n"];
+	Cctv -> Cctv [color=black, fontcolor=black, label="DcoEvent::GuiButtonPantographClicked \[(amIActiveCab() && _state.lowSpeed()) || !amIActiveCab()\]/\n"];
+	Cctv -> Cctv [color=red, fontcolor=red, label="DcoEvent::GuiButtonTdAndFfClicked \[(amIActiveCab() && _state.lowSpeed()) || !amIActiveCab()\]/\n"];
+	Cctv -> Cctv [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonCctvClicked \[\]/\n"];
+	Asdo -> Asdo [color=black, fontcolor=black, label="DcoEvent::ExitEvacuationMode \[\]/\n"];
+	DualScreenOtcm -> Asdo [color=red, fontcolor=red, label="DcoEvent::DualScreenOtcmDisable \[\]/\n})"];
+	DualScreenOtcm -> DualScreenOtcm [color=orange, fontcolor=orange, label="DcoEvent::OnLowSpeedMessage \[\]/\n_state.markEventOnHighSpeedCamerasNotViewed(false)"];
+	DualScreenOtcm -> DualScreenOtcm [color=red, fontcolor=red, label="DcoEvent::OnDoorReleaseMessage \[\]/\nupdateGuiWithDoorRelease(); markEvacAsCompleteIfPending()"];
+	DualScreenOtcm -> DualScreenOtcm [color=red, fontcolor=red, label="DcoEvent::GuiButtonOtcmClicked \[\]/\nsetDistanceAlarm(true); handleDualScreenOtcmShowCameras()"];
+	DualScreenOtcm -> DualScreenOtcm [color=orange, fontcolor=orange, label="DcoEvent::DualScreenOtcmShowCameras \[\]/\nhandleDualScreenOtcmShowCameras()"];
+	DualScreenOtcm -> DualScreenOtcm [color=pink, fontcolor=pink, label="DcoEvent::GuiImageClicked \[\]/\nhandleImageClickedInDualScreenOtcmMode()"];
+	DualScreenCctv -> DualScreenCctv [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::DualScreenCctvEnableAlarm \[\]/\nhandleDualScreenCctvEnableAlarm()"];
+	DualScreenCctv -> Asdo [color=black, fontcolor=black, label="DcoEvent::OnTcmsAlarmCancelMessage \[\]/\nhandleShowAsdo(_state.hsm().currentEventType()); clearTcmsAlarm()"];
+	DualScreenCctv -> DualScreenCctv [color=orange, fontcolor=orange, label="DcoEvent::OnLowSpeedMessage \[\]/\n"];
+	TcmsAlarm -> Otcm [color=orange, fontcolor=orange, label="DcoEvent::OnTcmsAlarmCancelMessage \[\]/\nclearTcmsAlarm(); handleShowOtcm(false)"];
+	TcmsAlarm -> TcmsAlarm [color=green, fontcolor=green, label="DcoEvent::OnLowSpeedMessage \[\]/\n"];
+	Otcm -> Otcm [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiOtcmStatusChangeEvent \[\]/\nhandleGuiOtcmStatusChangeEvent()"];
+	DualScreenOtcm -> DualScreenOtcm [color=blue, fontcolor=blue, label="DcoEvent::GuiOtcmStatusChangeEvent \[\]/\nhandleGuiOtcmStatusChangeEvent()"];
+}
+
+
+Process finished with exit code 0

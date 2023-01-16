@@ -1,0 +1,24 @@
+/usr/local/bin/python3.8 /Users/Nathan/work/petards/git/sup/gen6/statemachine/statemachines.py
+# /Users/Nathan/work/petards/git/asdo/Libraries/Tmc/ManualOverrideSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	Initial -> ConsistViewOverride [color=red, fontcolor=red, label="DcoEvent::NoTrigger \[!isLockedOnEntry()\]/\n"];
+	Initial -> ConsistViewOverride [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[isLockedOnEntry()\]/\nLockOnEntry()"];
+	ConsistViewOverride -> LopEditing [color=blue, fontcolor=blue, label="DcoEvent::GuiCarClicked \[\]/\ncarToggleSelection()"];
+	ConsistViewOverride -> LopEditing [color=red, fontcolor=red, label="DcoEvent::GuiButtonSelectClearAllCarsClicked \[\]/\nselectClearAllCars()"];
+	ConsistViewOverride -> ConsistViewOverride [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonAsdoOverrideClicked \[!isLockedOnEntry()\]/\n_state.hsm().sendEvent(DcoEvent::ManualOverrideCancelled); return true; })"];
+	SendEditedLop -> ConsistViewOverride [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[\]/\n"];
+	LopEditing -> SendEditedLop [color=pink, fontcolor=pink, label="DcoEvent::GuiButtonConfirmSelectionClicked \[\]/\n_state.hsm().sendEvent(DcoEvent::GuiButtonAsdoClicked); return true; })"];
+	LopEditing -> LopEditing [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonAsdoOverrideClicked \[!isLockedOnEntry()\]/\n_state.hsm().sendEvent(DcoEvent::ManualOverrideCancelled); return true; })"];
+	LopEditing -> LopEditing [color=green, fontcolor=green, label="DcoEvent::OnLocationMessage \[\]/\n"];
+	LopEditing -> LopEditing [color=black, fontcolor=black, label="DcoEvent::GuiButtonSelectClearAllCarsClicked \[\]/\nselectClearAllCars()"];
+	LopEditing -> LopEditing [color=orange, fontcolor=orange, label="DcoEvent::GuiCarClicked \[\]/\ncarToggleSelection()"];
+}
+
+
+Process finished with exit code 0

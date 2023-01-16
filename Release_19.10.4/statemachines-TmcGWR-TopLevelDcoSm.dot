@@ -1,0 +1,101 @@
+# /Users/Nathan/work/petards/git/asdo/Libraries/TmcGWR/TopLevelDcoSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	WaitForConfigValid -> LoadConfigDetails [color=red, fontcolor=red, label="DcoEvent::OnConfigValidMessage \[\]/\n"];
+	LoadConfigDetails -> CheckNonInteractiveMode [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::NoTrigger \[\]/\n"];
+	CheckNonInteractiveMode -> FailedMonitor [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::NoTrigger \[failMonitorRequest()\]/\n"];
+	CheckNonInteractiveMode -> LoadNvmDetails [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[!_state.nvmUsed() && !failMonitorRequest()\]/\n"];
+	CheckNonInteractiveMode -> BlankScreen [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[_state.nvmUsed() && !failMonitorRequest()\]/\n"];
+	Dco -> LoadConfigDetails [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnConfigValidMessage \[\]/\n"];
+	LoadNvmDetails -> BlankScreen [color=red, fontcolor=red, label="DcoEvent::NoTrigger \[\]/\n_state.nvmUsed(true)"];
+	BlankScreen -> Dco [color=green, fontcolor=green, label="DcoEvent::NoTrigger \[!_state.monitorFailureMode()\]/\n"];
+	BlankScreen -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[_state.monitorFailureMode()\]/\n"];
+	Dco -> FailedMonitor [color=pink, fontcolor=pink, label="DcoEvent::OnFailMonitorMessage \[\]/\n_state.blankScreen(false); PJAUDT << "Entering Failed Monitor Mode""];
+	Dco -> Dco [color=blue, fontcolor=blue, label="DcoEvent::GuiButtonOtcmClicked \[\]/\n"];
+	Dco -> Dco [color=black, fontcolor=black, label="DcoEvent::GuiButtonAsdoClicked \[\]/\n"];
+	Dco -> Dco [color=black, fontcolor=black, label="DcoEvent::GuiButtonSettingsClicked \[\]/\n"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::ShowOtcmOnDoorClosed \[\]/\n"];
+	Dco -> Dco [color=turquoise, fontcolor=turquoise, label="DcoEvent::ShowOtcmOnDoorReleased \[\]/\n"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::OnLowSpeedMessage \[_state.icmType() == IcmType::Asdo\]/\n"];
+	Dco -> Dco [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnLowSpeedMessage \[_state.icmType() == IcmType::Otcm && _state.monitorFailureMode()\]/\n"];
+	Dco -> Dco [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonDarkScreenClicked \[\]/\n_state.blankScreen(true)"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::OnDistanceAlarmMessage \[\]/\n"];
+	if( _state.leftDoorEverReleased() || _state.rightDoorEverReleased() ) -> { [color=black, fontcolor=black, label="lockoutVdius(); \[\]/\n"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::DualScreenOtcmEnable \[\]/\n"];
+	Dco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::MonitorFailureModeEnable \[\]/\n"];
+	Dco -> MonitorFailureDco [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[_state.otcmSingleMonitorModeEnabled()\]/\nhandleSingleMonitorModeRequest()"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::OnDoorReleaseMessage \[_state.icmType() == IcmType::Otcm\]/\nupdateGuiWithDoorRelease(); doorReleaseForOtcm(); auditIfNotViewingDooCamerasOnDoorClose()"];
+	Dco -> Dco [color=pink, fontcolor=pink, label="DcoEvent::OnDoorReleaseMessage \[_state.icmType() == IcmType::Asdo\]/\nupdateGuiWithDoorRelease(); auditIfNotViewingDooCamerasOnDoorClose()"];
+	Dco -> Dco [color=brown, fontcolor=brown, label="DcoEvent::GuiScreenTouched \[!amIActiveCab() && _state.icmType() == IcmType::Otcm && anyDoorsHavePreviouslyBeenReleased()\]/\nPJLOGI << "Stopping touch screen timeout handler";  _state.unblankScreen(true); _state.touchScreenTimeout().reset()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::GuiScreenTouched \[!amIActiveCab()\]/\ncheckInactiveCabOtcmTimers( true )"];
+	Dco -> Dco [color=orange, fontcolor=orange, label="DcoEvent::GuiScreenTouched \[_state.icmType() == IcmType::Otcm && !anyDoorsHavePreviouslyBeenReleased()\]/\nscreenTouched()"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::GuiScreenTouched \[amIActiveCab()\]/\nscreenTouched()"];
+	Dco -> Dco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiScreenTouched \[_state.icmType() == IcmType::Asdo && amIActiveCab( )&& !isWithinGeofence()\]/\n_state.unblankScreen(true)"];
+	Dco -> Dco [color=blue, fontcolor=blue, label="DcoEvent::OnVdiuStatusMessage \[\]/\nupdateGuiWithVdiuStatus()"];
+	Dco -> Dco [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnConsistMapMessage \[\]/\nupdateGuiWithConsistMap()"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::OnDoorMapMessage \[\]/\nupdateGuiWithDoorMap()"];
+	Dco -> Dco [color=red, fontcolor=red, label="DcoEvent::OnCameraSectionMapMessage \[\]/\nupdateGuiWithSectionsMap()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnSystemResetRequestMessage \[\]/\nhandleSystemResetRequest()"];
+	Dco -> Dco [color=blue, fontcolor=blue, label="DcoEvent::OnLocationMessage \[\]/\nupdateGuiWithLatestLocation(); clearPlatformIfLocationChanged()"];
+	Dco -> Dco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnCabActiveMessage \[\]/\nupdateGuiWithActiveCab()"];
+	Dco -> Dco [color=orange, fontcolor=orange, label="DcoEvent::OnDcoFaultRefresh \[\]/\nupdateGuiWithDcoFault()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnDcoFaultMessage \[\]/\nhandleDcoFaultMessage()"];
+	Dco -> Dco [color=black, fontcolor=black, label="DcoEvent::OnCarDcoFaultMessage \[\]/\nhandleCarDcoFaultMessage()"];
+	Dco -> Dco [color=brown, fontcolor=brown, label="DcoEvent::OnDeviceTemperatureMessage \[\]/\nhandleDeviceTemperatureMessage()"];
+	Dco -> Dco [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnAsdoOverrideMessage \[_state.tmcAsdoOverride()\]/\nupdateGuiWithAsdoOverrideActive()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnLopOverriddenMessage \[\]/\nupdateGuiWithLopOverride()"];
+	Dco -> Dco [color=brown, fontcolor=brown, label="DcoEvent::OnTmcLopMessage \[_state.doorMapMessage() != nullptr\]/\nsendLockOutPattern()"];
+	Dco -> Dco [color=orange, fontcolor=orange, label="DcoEvent::OnTmcPlatformSelectedMessage \[\]/\n_state.makeSureSelectedStationMatchesLocationMessage()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnTmcStationSelectedMessage \[\]/\n_state.makeSureSelectedStationMatchesLocationMessage()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnEvacuationMessage \[_state.tmcEvacuation()\]/\nupdateGuiWithEvacuationActive()"];
+	Dco -> Dco [color=black, fontcolor=black, label="DcoEvent::OnEvacuationMessage \[externalTransitionOnEvacExit()\]/\nupdateGuiWithEvacuationInactive()"];
+	Dco -> Dco [color=blue, fontcolor=blue, label="DcoEvent::OnEvacuationMessage \[!_state.tmcEvacuation() && !needCsdeWarning()\]/\nupdateGuiWithEvacuationInactive()"];
+	Dco -> Dco [color=green, fontcolor=green, label="DcoEvent::OnFirmwareVersionMismatchMessage \[\]/\nupdateGuiWithDcoFault()"];
+	Dco -> Dco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonSystemResetClickedEvent \[_state.resetButtonEnabled()\]/\nresetSwitches()"];
+	MonitorFailureDco -> MonitorFailureDco [color=orange, fontcolor=orange, label="DcoEvent::OnDcoFaultMessage \[\]/\nhandleDcoFaultMessage()"];
+	MonitorFailureDco -> MonitorFailureDco [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnDcoFaultRefresh \[\]/\nupdateGuiWithDcoFault()"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonDarkScreenClicked \[\]/\n_state.blankScreen(true)"];
+	MonitorFailureDco -> MonitorFailureDco [color=brown, fontcolor=brown, label="DcoEvent::OnCarDcoFaultMessage \[\]/\nhandleCarDcoFaultMessage()"];
+	MonitorFailureDco -> MonitorFailureDco [color=red, fontcolor=red, label="DcoEvent::OnVdiuStatusMessage \[\]/\nupdateGuiWithVdiuStatus()"];
+	MonitorFailureDco -> MonitorFailureDco [color=brown, fontcolor=brown, label="DcoEvent::OnConsistMapMessage \[\]/\nupdateGuiWithConsistMap()"];
+	MonitorFailureDco -> MonitorFailureDco [color=orange, fontcolor=orange, label="DcoEvent::OnDoorMapMessage \[\]/\nupdateGuiWithDoorMap()"];
+	MonitorFailureDco -> MonitorFailureDco [color=brown, fontcolor=brown, label="DcoEvent::OnCameraSectionMapMessage \[\]/\nupdateGuiWithSectionsMap()"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnSystemResetRequestMessage \[\]/\nhandleSystemResetRequest()"];
+	MonitorFailureDco -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::OnLocationMessage \[\]/\nupdateGuiWithLatestLocation(); clearPlatformIfLocationChanged()"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::OnCabActiveMessage \[\]/\nupdateGuiWithActiveCab()"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnDeviceTemperatureMessage \[\]/\nhandleDeviceTemperatureMessage()"];
+	MonitorFailureDco -> MonitorFailureDco [color=blue, fontcolor=blue, label="DcoEvent::OnAsdoOverrideMessage \[_state.tmcAsdoOverride()\]/\nupdateGuiWithAsdoOverrideActive()"];
+	MonitorFailureDco -> MonitorFailureDco [color=orange, fontcolor=orange, label="DcoEvent::OnLopOverriddenMessage \[\]/\nupdateGuiWithLopOverride()"];
+	MonitorFailureDco -> MonitorFailureDco [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnTmcLopMessage \[_state.doorMapMessage() != nullptr\]/\nsendLockOutPattern()"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::OnTmcPlatformSelectedMessage \[\]/\n_state.makeSureSelectedStationMatchesLocationMessage()"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::OnTmcStationSelectedMessage \[\]/\n_state.makeSureSelectedStationMatchesLocationMessage()"];
+	MonitorFailureDco -> MonitorFailureDco [color=black, fontcolor=black, label="DcoEvent::OnEvacuationMessage \[_state.tmcEvacuation()\]/\nupdateGuiWithEvacuationActive()"];
+	MonitorFailureDco -> MonitorFailureDco [color=blue, fontcolor=blue, label="DcoEvent::OnEvacuationMessage \[!_state.tmcEvacuation() && !needCsdeWarning()\]/\nupdateGuiWithEvacuationInactive()"];
+	MonitorFailureDco -> MonitorFailureDco [color=black, fontcolor=black, label="DcoEvent::OnFirmwareVersionMismatchMessage \[\]/\nupdateGuiWithDcoFault()"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnDoorReleaseMessage \[\]/\nupdateGuiWithDoorRelease(); doorReleaseForOtcm(); auditIfNotViewingDooCamerasOnDoorClose()"];
+	MonitorFailureDco -> LoadConfigDetails [color=orange, fontcolor=orange, label="DcoEvent::OnConfigValidMessage \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::GuiButtonOtcmClicked \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonAsdoClicked \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::GuiButtonSettingsClicked \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=blue, fontcolor=blue, label="DcoEvent::ShowOtcmOnDoorClosed \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=brown, fontcolor=brown, label="DcoEvent::ShowOtcmOnDoorReleased \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnLowSpeedMessage \[_state.lowSpeed()\]/\n_state.unblankScreen(false); }"];
+	MonitorFailureDco -> Dco [color=blue, fontcolor=blue, label="DcoEvent::GuiButtonIcmRebootClickedEvent \[\]/\nhandleIcmRebootButtonClicked()"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::OnLowSpeedMessage \[!_state.lowSpeed() && !_state.leftDoorEverReleased() && !_state.rightDoorEverReleased()\]/\n_state.blankScreen(false)"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::OnLowSpeedMessage \[!_state.lowSpeed()\]/\nauditIfNotViewingDooCamerasOnDoorClose()"];
+	MonitorFailureDco -> MonitorFailureDco [color=blue, fontcolor=blue, label="DcoEvent::OnDistanceAlarmMessage \[\]/\n"];
+	if( _state.leftDoorEverReleased() || _state.rightDoorEverReleased() ) -> { [color=black, fontcolor=black, label="lockoutVdius(); \[\]/\n"];
+	MonitorFailureDco -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::GuiScreenTouched \[!amIActiveCab() && anyDoorsHavePreviouslyBeenReleased()\]/\nPJLOGI << "Stopping touch screen timeout handler";  _state.unblankScreen(true); _state.touchScreenTimeout().reset()"];
+	MonitorFailureDco -> MonitorFailureDco [color=green, fontcolor=green, label="DcoEvent::GuiScreenTouched \[!isWithinGeofence() && amIActiveCab()\]/\n_state.unblankScreen(true)"];
+	MonitorFailureDco -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::GuiScreenTouched \[!amIActiveCab()\]/\nscreenTouched()"];
+	MonitorFailureDco -> MonitorFailureDco [color=pink, fontcolor=pink, label="DcoEvent::GuiScreenTouched \[amIActiveCab()\]/\nscreenTouched()"];
+	MonitorFailureDco -> MonitorFailureDco [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonSystemResetClickedEvent \[_state.resetButtonEnabled()\]/\nresetSwitches()"];
+}
+
+
+Process finished with exit code 0

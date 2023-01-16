@@ -43,5 +43,7 @@ class SM:
         colour = pick_color()
         # print("\t{} -> {} [color={}, fontcolor={}, label=\"{}\n[{}]\"];".
         #       format(self.this_state, self.next_state, colour, colour, self.event, self.guard))
-        print("\t{} -> {} [color={}, fontcolor={}, label=\"{} \[{}\]\n<{}>\"];".
-              format(self.this_state, self.next_state, colour, colour, self.event, self.guard, self.action))
+        print("\t{} -> {} [color={}, fontcolor={}, label=\"{} \[{}\]/\\n{}\"];".
+              format(self.this_state, self.next_state, colour, colour, self.event, self.guard, self.action.strip(
+
+        ).rstrip(';')))

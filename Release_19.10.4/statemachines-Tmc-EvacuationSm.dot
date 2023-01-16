@@ -1,0 +1,16 @@
+# /Users/Nathan/work/petards/git/asdo/Libraries/Tmc/EvacuationSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	Initial -> DoorsReleased [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[leftDoorReleased() || rightDoorReleased()\]/\n"];
+	Initial -> DoorsNotReleased [color=green, fontcolor=green, label="DcoEvent::NoTrigger \[!leftDoorReleased() && !rightDoorReleased()\]/\n"];
+	DoorsNotReleased -> DoorsNotReleased [color=brown, fontcolor=brown, label="DcoEvent::OnDoorReleaseMessage \[!doorsReleased()\]/\nexitEvacuationMode()"];
+	DoorsReleased -> DoorsReleased [color=red, fontcolor=red, label="DcoEvent::OnDoorReleaseMessage \[!doorsReleased()\]/\nexitEvacuationMode()"];
+}
+
+
+Process finished with exit code 0

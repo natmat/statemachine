@@ -1,0 +1,30 @@
+# /Users/Nathan/work/petards/git/asdo/Libraries/Tmc/AsdoSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	Initial -> Evacuation [color=orange, fontcolor=orange, label="DcoEvent::NoTrigger \[reEnterEvacuationMode()\]/\nsetEvacModeLop(); exitCsde(); _state.makeSureSelectedStationMatchesLocationMessage()"];
+	Initial -> Journey [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[!_state.lowSpeed()\]/\n"];
+	Initial -> LowSpeed [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[_state.lowSpeed()\]/\n"];
+	LowSpeed -> LowSpeed [color=blue, fontcolor=blue, label="DcoEvent::OnDistanceAlarmMessage \[\]/\n"];
+	LowSpeed -> Journey [color=blue, fontcolor=blue, label="DcoEvent::OnLowSpeedMessage \[!_state.lowSpeed()\]/\n"];
+	LowSpeed -> Evacuation [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonEvacuationClicked \[amIActiveCab()\]/\nexitCsde(); _state.makeSureSelectedStationMatchesLocationMessage()"];
+	LowSpeed -> LowSpeed [color=brown, fontcolor=brown, label="DcoEvent::OnLocationMessage \[\]/\nclearPlatformIfLocationChanged()"];
+	LowSpeed -> LowSpeed [color=blue, fontcolor=blue, label="DcoEvent::OnCabActiveMessage \[(amIActiveCab() && (_state.icmType() == IcmType::Asdo || _state.monitorFailureMode()))\]/\n"];
+	LowSpeed -> LowSpeed [color=pink, fontcolor=pink, label="DcoEvent::ManualOverrideCancelled \[\]/\n"];
+	LowSpeed -> LowSpeed [color=pink, fontcolor=pink, label="DcoEvent::OnCabActiveMessage \[\]/\nupdateGuiWithActiveCab(); sendTmcAsdoEnabledEvent()"];
+	Journey -> LowSpeed [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[_state.lowSpeed() && isWithinGeofence() && ( _state.icmType() == IcmType::Asdo || _state.monitorFailureMode() )\]/\nunblankScreenIfActiveCab()"];
+	Journey -> Journey [color=blue, fontcolor=blue, label="DcoEvent::OnLowSpeedMessage \[\]/\n"];
+	Journey -> Journey [color=green, fontcolor=green, label="DcoEvent::OnLocationMessage \[\]/\nupdateGuiWithLocationInJourneyPhase(); clearPlatformIfLocationChanged()"];
+	Journey -> Journey [color=black, fontcolor=black, label="DcoEvent::GuiScreenTouched \[!_state.lowSpeed()\]/\nscreenTouched()"];
+	Journey -> LowSpeed [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiScreenTouched \[_state.lowSpeed()\]/\n_state.unblankScreen(true); updateOthersWithLowSpeedMessageIfActiveCab()"];
+	Journey -> LowSpeed [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnScreenTouchedInTheActiveCab \[_state.lowSpeed() && (_state.icmType() == IcmType::Asdo || _state.monitorFailureMode()) && !amIActiveCab()\]/\n"];
+	Evacuation -> LowSpeed [color=black, fontcolor=black, label="DcoEvent::GuiButtonEvacuationClicked \[\]/\n_state.hsm().sendEvent(DcoEvent::GuiButtonAsdoClicked); return true; })"];
+	Evacuation -> LowSpeed [color=red, fontcolor=red, label="DcoEvent::ManualOverrideCancelled \[\]/\n"];
+}
+
+
+Process finished with exit code 0
