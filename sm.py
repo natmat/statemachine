@@ -36,6 +36,7 @@ class SM:
         else:
             self.action = ''
 
+        # print(transitions)
         self.xternal = transitions[5]
 
     def print(self):

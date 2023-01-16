@@ -7,7 +7,9 @@ from sm import SM
 root = tk.Tk()
 root.withdraw()
 
-file_path = filedialog.askopenfilename()
+file_path = filedialog.askopenfilename(
+    filetypes=[("sm files","*.cpp")]
+)
 # file_path = "evacSm.cpp"
 # file_path = "dcosm.dat"
 # print(file_path)
@@ -22,41 +24,42 @@ state_machines = []
 it = iter(all_lines)
 
 
-def newStateTransition():
-    global end_of_fsm_regex, line, sm
-    regex = re.compile('},?')
-    while regex.match(line) is None:
-        if not line.startswith('/'):
-            # print(line)
-            state_machine.append(line.rstrip(','))
-        line = next(it)
-
-    # print('sm', state_machine)
-    if len(state_machine) < 5:
+def newStateTransition(lines):
+    if len(lines) < 5:
+        print("ERROR: not enough SM inputs")
         return
+
     sm = SM()
-    sm.init_sm(state_machine[1:])
+    try:
+        sm.init_sm(lines)
+    except IndexError as e:
+        print("ERROR: ", repr(e))
     state_machines.append(sm)
 
 
 done = False
 for line in it:
-    end_of_fsm_regex = re.compile('fsm.addTransitions')
-    result = end_of_fsm_regex.search(line)
-    if not result:
+    if '_fsm.addTransitions' in line:
+        break
+
+while not done:
+    line = next(it)
+    if re.match('^}\);', line.strip()):
+        done = True
+        continue
+
+    if not re.match('^{', line.strip()):
         continue
 
     line = next(it)
-    while not done and line is not None:
-        end_of_fsm_regex = re.compile('}\);')
-        while line != '{':
-            if end_of_fsm_regex.match(line):
-                done = True
-                break
-            line = next(it)
+    sm_lines = []
+    while not re.match('^},?', line.strip()):
+        if not re.match('^//', line):
+            sm_lines.append(line.strip().rstrip(','))
+        line = next(it)
 
-        state_machine = []
-        newStateTransition()
+    state_machine = []
+    newStateTransition(sm_lines)
 
 print('# {}'.format(file_path))
 print("""

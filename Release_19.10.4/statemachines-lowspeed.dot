@@ -1,0 +1,74 @@
+
+# /Users/Nathan/work/petards/git/asdo/Libraries/Tmc/LowSpeedSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	CheckNvmLocation -> LocationSelection [color=red, fontcolor=red, label="DcoEvent::NoTrigger \[_state.nvmLocation() == nullptr\]< clearNvmStateData(); >"];
+	CheckNvmLocation -> HandleNvmLocation [color=brown, fontcolor=brown, label="DcoEvent::NoTrigger \[_state.nvmLocation() && !plausibleLocations().empty()\]<>"];
+	CheckNvmLocation -> CheckNvmPlatform [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[_state.nvmLocation() && plausibleLocations().empty()\]< setNvmLocationAsCurrentLocation(); _state.nvmLocation().reset(); >"];
+	HandleNvmLocation -> CheckNvmPlatform [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[isNvmLocationInPlausibleLocations()\]< setNvmLocationAsCurrentLocation(); _state.nvmLocation().reset(); >"];
+	HandleNvmLocation -> ConfirmedLocations [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[isWithinGeofence() && plausibleLocations().size() == 1\]< locationMoreReliableThanNvm(); >"];
+	HandleNvmLocation -> MultiplePlausibleLocations [color=green, fontcolor=green, label="DcoEvent::NoTrigger \[!isNvmLocationInPlausibleLocations() && plausibleLocations().size() >= 1\]< clearNvmStateData(); >"];
+	CheckNvmPlatform -> HandleNvmPlatform [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::NoTrigger \[_state.nvmStopBoard() != nullptr\]< setNvmStopBoardAsCurrentStopBoard(); >"];
+	CheckNvmPlatform -> ConfirmedLocations [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[_state.nvmStopBoard() == nullptr\]< clearNvmStateData(); >"];
+	HandleNvmPlatform -> ApplyLockoutPattern [color=orange, fontcolor=orange, label="DcoEvent::NoTrigger \[_state.nvmLop() == nullptr\]< clearNvmStateData(); >"];
+	HandleNvmPlatform -> ConsistView [color=brown, fontcolor=brown, label="DcoEvent::NoTrigger \[_state.nvmLop() != nullptr\]< _state.nvmStopBoard().reset(); >"];
+	ApplyNvmLockoutPattern -> ConsistView [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::NoTrigger \[\]< _state.nvmLop().reset(); >"];
+	LocationSelection -> ConsistView [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[_state.driverOverrideInUnknownLocation()\]
+<	updateGuiWithStationInformation(); >"];
+	LocationSelection -> ConsistView [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[\]<>"];
+	LocationSelection -> MultiplePlausibleLocations [color=red, fontcolor=red, label="DcoEvent::NoTrigger \[!plausibleLocations().empty() && !isWithinGeofence()\]<>"];
+	LocationSelection -> NoPlausibleLocations [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[plausibleLocations().empty()\]<>"];
+	LocationSelection -> ConfirmedLocations [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[\]<>"];
+	LocationSelection -> NoPlausibleLocations [color=turquoise, fontcolor=turquoise, label="DcoEvent::NoTrigger \[\]<>"];
+	MultiplePlausibleLocations -> NoPlausibleLocations [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonLocationClicked \[\]
+<}), true); _state.reactToLocationMessages(false); >"];
+	MultiplePlausibleLocations -> NoPlausibleLocations [color=black, fontcolor=black, label="DcoEvent::GuiButtonListAllLocationsClicked \[\]
+<}), true); _state.reactToLocationMessages(false); >"];
+	MultiplePlausibleLocations -> ConfirmedLocations [color=red, fontcolor=red, label="DcoEvent::OnTmcStationSelectedMessage \[\]< clearPlatformIfLocationChanged(); >"];
+	MultiplePlausibleLocations -> ConfirmedLocations [color=red, fontcolor=red, label="DcoEvent::GuiButtonConfirmSelectionClicked \[_state.selectedStation() != nullptr && filterStopboards( *_state.selectedStation() )\]<>"];
+	MultiplePlausibleLocations -> MultiplePlausibleLocations [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiStationSelected \[\]< handleStationSelected(); >"];
+	MultiplePlausibleLocations -> ConsistView [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonAsdoOverrideClicked \[\]< handleOverrideInUnknownLocation(); >"];
+	MultiplePlausibleLocations -> ConsistView [color=brown, fontcolor=brown, label="DcoEvent::OnDriverOverrideInUnknownLocationMessage \[\]< handleOverrideInUnknownLocation(); >"];
+	NoPlausibleLocations -> ConfirmedLocations [color=black, fontcolor=black, label="DcoEvent::GuiButtonConfirmSelectionClicked \[_state.selectedStation() != nullptr && filterStopboards( *_state.selectedStation() )\]<>"];
+	NoPlausibleLocations -> ConfirmedLocations [color=red, fontcolor=red, label="DcoEvent::OnTmcStationSelectedMessage \[\]< clearPlatformIfLocationChanged(); _state.notifyStationConsistWide(true); >"];
+	NoPlausibleLocations -> NoPlausibleLocations [color=black, fontcolor=black, label="DcoEvent::GuiStationSelected \[\]< handleStationSelected(); >"];
+	NoPlausibleLocations -> ConsistView [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiButtonAsdoOverrideClicked \[\]< handleOverrideInUnknownLocation(); >"];
+	NoPlausibleLocations -> ConsistView [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnDriverOverrideInUnknownLocationMessage \[\]< handleOverrideInUnknownLocation(); >"];
+	ConfirmedLocations -> ApplyLockoutPattern [color=orange, fontcolor=orange, label="DcoEvent::NoTrigger \[_state.selectedStopBoard() != nullptr\]<>"];
+	ConfirmedLocations -> MultiplePlatformsDetectDirection [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[!availablePlatforms().empty()\]<>"];
+	MultiplePlatforms -> ConfirmedLocations [color=blue, fontcolor=blue, label="DcoEvent::OnTmcStationSelectedMessage \[\]< clearPlatformIfLocationChanged(); >"];
+	MultiplePlatforms -> ApplyLockoutPattern [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnTmcPlatformSelectedMessage \[\]<>"];
+	MultiplePlatforms -> NoPlausibleLocations [color=pink, fontcolor=pink, label="DcoEvent::GuiButtonLocationClicked \[\]
+<}), true); >"];
+	MultiplePlatforms -> ApplyLockoutPattern [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonConfirmSelectionClicked \[_state.selectedStopBoard() != nullptr\]< _state.clearTheRealNvmLop(); _state.notifyStopBoardConsistWide(true); >"];
+	MultiplePlatforms -> MultiplePlatforms [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::GuiPlatformSelected \[\]< handlePlatformSelected(); >"];
+	MultiplePlatforms -> ConsistView [color=pink, fontcolor=pink, label="DcoEvent::OnDriverOverrideInUnknownLocationMessage \[\]< handleOverrideInUnknownLocation(); >"];
+	MultiplePlatforms -> ConsistView [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonAsdoOverrideClicked \[\]< handleOverrideInUnknownLocation(); >"];
+	ApplyLockoutPattern -> ConsistView [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[\]<>"];
+	ApplyLockoutPattern -> LocationSelection [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::EnforceStopboardSelectionDueToEmptyLop \[\]<>"];
+	ConsistView -> ConsistView [color=red, fontcolor=red, label="DcoEvent::OnConsistMapMessage \[\]< updateGuiWithConsistMap(); >"];
+	ConsistView -> ConsistView [color=turquoise, fontcolor=turquoise, label="DcoEvent::OnTmcLopMessage \[\]< sendLockOutPattern(); >"];
+	ConsistView -> ApplyLockoutPattern [color=green, fontcolor=green, label="DcoEvent::OnDoorMapMessage \[_state.nvmLop()==nullptr && hasDoorMapChanged()\]< updateGuiWithDoorMap();  >"];
+	ConsistView -> ConsistView [color=blue, fontcolor=blue, label="DcoEvent::OnDoorMapMessage \[_state.nvmLop()==nullptr && !hasDoorMapChanged()\]< updateGuiWithDoorMap();  >"];
+	ConsistView -> ApplyNvmLockoutPattern [color=pink, fontcolor=pink, label="DcoEvent::OnDoorMapMessage \[_state.nvmLop()!=nullptr\]< updateGuiWithDoorMap();  >"];
+	ConsistView -> ApplyLockoutPattern [color=blue, fontcolor=blue, label="DcoEvent::OnTmcPlatformSelectedMessage \[\]< clearNvmStateData(); >"];
+	ConsistView -> LocationSelection [color=orange, fontcolor=orange, label="DcoEvent::OnLocationMessage \[!_state.driverOverrideInUnknownLocation()\]< clearPlatformIfLocationChanged(); >"];
+	ConsistView -> LocationSelection [color=pink, fontcolor=pink, label="DcoEvent::OnLocationMessage \[_state.driverOverrideInUnknownLocation()\]< clearPlatformIfLocationChanged(); >"];
+	ConsistView -> NoPlausibleLocations [color=turquoise, fontcolor=turquoise, label="DcoEvent::GuiButtonLocationClicked \[\]
+<}), true); >"];
+	ConsistView -> ConfirmedLocations [color=pink, fontcolor=pink, label="DcoEvent::OnTmcStationSelectedMessage \[\]< clearPlatformIfLocationChanged(); >"];
+	ConsistView -> ManualOverride [color=turquoise, fontcolor=turquoise, label="DcoEvent::GuiButtonAsdoOverrideClicked \[canManualOverride()\]<>"];
+	ConsistView -> NoPlausibleLocations [color=orange, fontcolor=orange, label="DcoEvent::OnDriverOverrideInUnknownLocationMessage \[\]< handleOverrideInUnknownLocation(); >"];
+	MultiplePlatformsDetectDirection -> MultiplePlatforms [color=red, fontcolor=red, label="DcoEvent::NoTrigger \[!_state.platformConfirmed()\]<>"];
+	MultiplePlatformsDetectDirection -> ApplyLockoutPattern [color=black, fontcolor=black, label="DcoEvent::NoTrigger \[_state.platformConfirmed()\]<>"];
+	ManualOverride -> ManualOverride [color=darkorchid1, fontcolor=darkorchid1, label="DcoEvent::OnLocationMessage \[\]<>"];
+	ManualOverride -> ConsistView [color=brown, fontcolor=brown, label="DcoEvent::OnDoorReleaseMessage \[!allDoorsClosed()\]<>"];
+	ManualOverride -> NoPlausibleLocations [color=pink, fontcolor=pink, label="DcoEvent::GuiButtonListAllLocationsClicked \[\]
+<}), true); >"];
+}
+

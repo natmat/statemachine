@@ -1,0 +1,22 @@
+# /Users/Nathan/work/petards/git/asdo/Libraries/Tmc/ManualOverrideSm.cpp
+
+digraph G {
+	rankdir=LR;
+	node [shape = doublecircle]; Initial;
+	node [shape = circle, style=filled, fontcolor=blue fontsize=12];
+     
+
+	Initial -> ConsistViewOverride [color=blue, fontcolor=blue, label="DcoEvent::NoTrigger \[!isLockedOnEntry()\]<>"];
+	Initial -> ConsistViewOverride [color=orange, fontcolor=orange, label="DcoEvent::NoTrigger \[isLockedOnEntry()\]< LockOnEntry(); >"];
+	ConsistViewOverride -> LopEditing [color=green, fontcolor=green, label="DcoEvent::GuiCarClicked \[\]< carToggleSelection(); >"];
+	ConsistViewOverride -> LopEditing [color=orange, fontcolor=orange, label="DcoEvent::GuiButtonSelectClearAllCarsClicked \[\]< selectClearAllCars(); >"];
+	ConsistViewOverride -> ConsistViewOverride [color=blue, fontcolor=blue, label="DcoEvent::GuiButtonAsdoOverrideClicked \[!isLockedOnEntry()\]< _state.hsm().sendEvent(DcoEvent::ManualOverrideCancelled); return true; }); >"];
+	SendEditedLop -> ConsistViewOverride [color=pink, fontcolor=pink, label="DcoEvent::NoTrigger \[\]<>"];
+	LopEditing -> SendEditedLop [color=turquoise, fontcolor=turquoise, label="DcoEvent::GuiButtonConfirmSelectionClicked \[\]< _state.hsm().sendEvent(DcoEvent::GuiButtonAsdoClicked); return true; }); >"];
+	LopEditing -> LopEditing [color=brown, fontcolor=brown, label="DcoEvent::GuiButtonAsdoOverrideClicked \[!isLockedOnEntry()\]< _state.hsm().sendEvent(DcoEvent::ManualOverrideCancelled); return true; }); >"];
+	LopEditing -> LopEditing [color=black, fontcolor=black, label="DcoEvent::OnLocationMessage \[\]<>"];
+	LopEditing -> LopEditing [color=black, fontcolor=black, label="DcoEvent::GuiButtonSelectClearAllCarsClicked \[\]< selectClearAllCars(); >"];
+	LopEditing -> LopEditing [color=turquoise, fontcolor=turquoise, label="DcoEvent::GuiCarClicked \[\]< carToggleSelection(); >"];
+}
+
+
